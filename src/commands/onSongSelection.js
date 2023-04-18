@@ -1,21 +1,22 @@
-import addTrack from "../repository/add_track.js";
-import getTracks from "../repository/get_tracks.js";
+import { addTrack } from "../repository/track.js";
 
 /**
  * Adds the song to the Discord server's queue. If there's no track currently playing,
  * it also plays it.
  * @param {import("discord.js").Interaction} interaction
- * @param {import("@discordjs/voice").AudioPlayer} audioPlayer
+ * @param {import("discord.js").AudioPlayer} audioPlayer
+ * @returns {Promise<import("discord.js").Message<boolean>>}
  */
 export default async function execute(interaction) {
   //if (interaction.member.voice.channel === null) return;
-  try {
-    await addTrack(interaction.guildId, interaction.customId);
-  } catch {
-    return interaction.reply("unable to add the song to the queue.");
-  }
+  const songId = interaction.customId;
+  const serverId = interaction.guildId;
 
-  (await getTracks(interaction.guildId)).forEach((e) => console.log(e));
+  try {
+    await addTrack(serverId, songId);
+  } catch {
+    return interaction.reply("Unable to add the song to the queue.");
+  }
 
   return interaction.reply(interaction.customId + " added to the database!");
 }
